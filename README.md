@@ -51,4 +51,86 @@ npm run build
 - **IProductView** — Используется для отображения продуктов на странице в View
 - **IBasketView** — Используется для отображения корзины на странице в View
 - **IEventEmitter** — Слушател событие
+- **IComponent** — Интерфейс базового компонента
+- **IProduct** — Структура данных о товаре
+- **IEventEmitter** — Контракт системы событий
+- **IAppEvents** — Все используемые события для подключения модулей
 
+# Документация классов
+## Model
+### basketModel
+
+**Поля**
+-state: IBasketState - текущее состояние баскетбола с очками и общим количеством
+-products: Product[] - ссылка на доступные товары
+**Методы**
+-getState(): IBasketState — возвращает текущее состояние корзины
+-addItem(product: IProduct): void — добавляет товар в корзину с проверкой
+-removeItem(id: string): void — удаляет товар из корзины по идентификатору
+-isInBasket(productId: string): boolean — проверяет, есть ли товар в корзине
+-getItemCount(): number — возвращает количество товаров в корзине
+
+
+### ProductModel
+Модель, управляющая загрузкой и управлением данными о товарах.
+**Поля**
+-products: IProduct[] — массив всех загруженных товаров
+-api: Api — экземпляр клиента API
+**Методы**
+-loadProducts(): Promise<IProduct[]> — загрузка товаров с сервера
+-getProductById(id: string): IProduct | undefined — поиск товара по идентификатору
+-getProducts(): IProduct[] — возврат всех товаров
+-getProductsByCategory(category: string): IProduct[] — фильтрация товаров по категории
+
+## View
+### card
+компонент для отображения товаров
+**Поля**
+-template: HTMLTemplateElement — HTML-шаблон для рендеринга
+-container: HTMLElement — элемент-контейнер DOM
+**Методы**
+-renderGallery(product: IProduct): HTMLElement — отображает товар для основной галереи
+-renderPreview(product: IProduct, isInBasket: boolean): HTMLElement — отображает предварительный просмотр товара в модальном окне
+-renderBasket(item: IBasketItem): HTMLElement — отображает товар в списке корзины
+-setPrice(element: HTMLElement, price: number | null): void — форматирует отображение цены
+
+### basket
+Компонент отображения товары и сумму в карзине.
+**Поля**
+-basketList: HTMLElement — элемент UL для товаров в корзине
+-basketTotal: HTMLElement — элемент, отображающий общую стоимость
+-checkoutButton: HTMLButtonElement — кнопка оформления заказа
+-emptyMessage: HTMLElement — сообщение о пустой корзине
+**Методы**
+-render(state: IBasketState): HTMLElement — обновляет отображение корзины
+-setLoading(isLoading: boolean): void — отображает состояние загрузки во время оформления заказа
+-showError(message: string): void — отображает сообщение об ошибке
+-clearError(): void — удаляет сообщение об ошибке
+
+### productList
+Компонент галереи товаров
+**Поля**
+-cardComponent: Card — компонент карточки для отображения товаров
+-container: HTMLElement — элемент-контейнер галереи
+**Методы**
+-render(products: IProduct[]): HTMLElement — отображает галерею товаров
+-showError(message: string): void — отображает сообщение об ошибке
+
+### modal
+Компонент управления модальным окном
+**Поля**
+-contentContainer: HTMLElement — область содержимого модального окна
+-closeButton: HTMLButtonElement — кнопка закрытия модального окна
+**Методы**
+-open(content: HTMLElement): void — открывает модальное окно с содержимым
+-close(): void — закрывает модальное окно
+-setVisible(isVisible: boolean): void — отображает/скрывает модальное окно
+
+## Component
+Базовый класс, обеспечивающий общую функциональность для всех компонентов.
+**Методы**
+-render(...args: unknown[]): HTMLElement — рендерит компонент (абстрактный)
+-setVisible(isVisible: boolean): void — показывает/скрывает компонент
+-setDisabled(isDisabled: boolean): void — включает/отключает компонент
+-setText(element: HTMLElement, value: string): void — устанавливает текст элемента
+-setImage(element: HTMLImageElement, src: string, alt?: string): void — устанавливает источник изображения
