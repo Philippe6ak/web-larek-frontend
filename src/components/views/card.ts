@@ -1,7 +1,7 @@
-import { Component } from './baseComponent';
-import { IProduct, IBasketItem } from '../types';
-import { eventEmitter } from '../utils/eventEmitter';
-import { CDN_URL } from '../utils/constants';
+import { Component } from '../base/component';
+import { IProduct, IBasketItem } from '../../types/index';
+import { eventEmitter } from '../../utils/eventEmitter';
+import { CDN_URL } from '../../utils/constants';
 
 export class Card extends Component {
     private template: HTMLTemplateElement;
@@ -15,7 +15,7 @@ export class Card extends Component {
         }
     }
 
-    // 1. For main gallery products (click to preview)
+    // 1. For main gallery products
     renderGallery(data: IProduct): HTMLElement {
         const card = this.createCardFromTemplate();
         this.populateCardBasic(card, data);

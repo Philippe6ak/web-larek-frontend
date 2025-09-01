@@ -1,6 +1,6 @@
-import { Component } from './baseComponent';
-import { IBasketState } from '../types';
-import { eventEmitter } from '../utils/eventEmitter';
+import { Component } from '../base/component';
+import { IBasketState } from '../../types/index';
+import { eventEmitter } from '../../utils/eventEmitter';
 import { Card } from './card';
 
 export class Basket extends Component {
@@ -77,12 +77,6 @@ export class Basket extends Component {
                 this.basketList.appendChild(basketItemElement);
             });
         }
-    }
-
-    // Show loading state
-    setLoading(isLoading: boolean): void {
-        this.checkoutButton.disabled = isLoading;
-        this.checkoutButton.textContent = isLoading ? 'Загрузка...' : 'Оформить';
     }
 
     // Show error state

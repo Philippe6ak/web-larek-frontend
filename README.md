@@ -59,9 +59,9 @@ npm run build
 # Документация классов
 ## Model
 ### basketModel
-
+Модель корзины
 **Поля**
--state: IBasketState - текущее состояние баскетбола с очками и общим количеством
+-state: IBasketState - текущее состояние корзины с товарами и общей суммой (sorry, the translator did this)
 -products: Product[] - ссылка на доступные товары
 **Методы**
 -getState(): IBasketState — возвращает текущее состояние корзины
@@ -69,7 +69,6 @@ npm run build
 -removeItem(id: string): void — удаляет товар из корзины по идентификатору
 -isInBasket(productId: string): boolean — проверяет, есть ли товар в корзине
 -getItemCount(): number — возвращает количество товаров в корзине
-
 
 ### ProductModel
 Модель, управляющая загрузкой и управлением данными о товарах.
@@ -81,6 +80,15 @@ npm run build
 -getProductById(id: string): IProduct | undefined — поиск товара по идентификатору
 -getProducts(): IProduct[] — возврат всех товаров
 -getProductsByCategory(category: string): IProduct[] — фильтрация товаров по категории
+
+### OrderModel
+Модель, обрабатывающая проверку заказа и отправку его на сервер.
+**Поля**
+-api: API — клиентский экземпляр API для взаимодействия с сервером
+-basketModel: BasketModel — ссылка на корзину для данных заказа
+**Методы**
+-validateOrderData(formData: IOrderData): string[] — проверяет поля формы заказа
+-submitOrder(formData: IOrderData): Promise<IOrderResponse> — отправляет заказ на сервер
 
 ## View
 ### card
@@ -126,6 +134,31 @@ npm run build
 -close(): void — закрывает модальное окно
 -setVisible(isVisible: boolean): void — отображает/скрывает модальное окно
 
+### Header
+Управление значком корзины и отображением счетчика товаров
+**Поля**
+-cartCountElement: HTMLElement — элемент, отображающий количество товаров в корзине.
+-cartButton: HTMLButtonElement — элемент кнопки со значком корзины.
+-itemCount: number — текущее количество товаров в корзине.
+**Методы**
+-updateCartCount(): void - updates cart counter display
+-setupEventListeners(): void - handles cart button clicks and basket updates
+
+### paymentForm and contactForm
+Компонент формы для выбора способа оплаты, адреса доставки и контактной информации пользователя.
+**Методы**
+-validateForm(errorElement: HTMLElement): void — проверяет форму и выводит ошибки
+-isValid(): boolean — проверяет, заполнена ли форма коректно
+-getData(): {payment: TPaymentType; address: string} — возвращает данные формы
+
+### orderSuccess
+Компонент для последнего модального окна «успех»
+**Поля**
+-orderIdElement: HTMLElement - element displaying order ID
+-totalElement: HTMLElement - element displaying order total
+-closeButton: HTMLButtonElement - close modal button
+**Методы**
+
 ## Component
 Базовый класс, обеспечивающий общую функциональность для всех компонентов.
 **Методы**
@@ -134,3 +167,6 @@ npm run build
 -setDisabled(isDisabled: boolean): void — включает/отключает компонент
 -setText(element: HTMLElement, value: string): void — устанавливает текст элемента
 -setImage(element: HTMLImageElement, src: string, alt?: string): void — устанавливает источник изображения
+
+## Presenter 
+main app (не сделано еще)

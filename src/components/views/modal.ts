@@ -1,5 +1,5 @@
-import { Component } from './baseComponent';
-import { eventEmitter } from '../utils/eventEmitter';
+import { Component } from '../base/component';
+import { eventEmitter } from '../../utils/eventEmitter';
 
 export class Modal extends Component {
     private contentContainer: HTMLElement;
@@ -13,16 +13,20 @@ export class Modal extends Component {
         this.setupEventListeners();
     }
 
+    render(): HTMLElement {
+        return this.container;
+    }
+
     open(content: HTMLElement): void {
         this.contentContainer.innerHTML = '';
         this.contentContainer.appendChild(content);
         this.setVisible(true);
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
+        document.body.style.overflow = 'hidden';
     }
 
     close(): void {
         this.setVisible(false);
-        document.body.style.overflow = ''; // Re-enable scrolling
+        document.body.style.overflow = '';
         eventEmitter.emit('modal:closed');
     }
 

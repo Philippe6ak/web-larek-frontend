@@ -1,24 +1,21 @@
-import { IBasketModel, IBasketState, IProduct, IBasketItem } from '../types';
-import { eventEmitter } from '../utils/eventEmitter';
+import { IBasketModel, IBasketState, IProduct, IBasketItem } from '../../types';
+import { eventEmitter } from '../../utils/eventEmitter';
 
 export class BasketModel implements IBasketModel {
-    // Private state - only this class can modify it
     private state: IBasketState = { 
         items: [], 
         total: 0 
     };
 
-    // Public method to get current state (returns a copy for safety)
     getState(): IBasketState {
         return { 
             items: [...this.state.items], // Copy array to prevent external modification
-            total: this.state.total 
+            total: this.state.total
         };
     }
 
     // Add product to basket with validation
     addItem(product: IProduct): void {
-        // Validate product can be added
         if (product.price === null) {
             console.log('Cannot add priceless product to basket');
             return;
@@ -28,8 +25,6 @@ export class BasketModel implements IBasketModel {
         const existingItemIndex = this.state.items.findIndex(item => item.id === product.id);
         
         if (existingItemIndex >= 0) {
-            // Product already in basket - we could increment quantity here
-            // For now, we'll just ignore duplicates since we're doing 1 item per product
             console.log('Product already in basket');
             return;
         }
@@ -37,7 +32,7 @@ export class BasketModel implements IBasketModel {
         // Create basket item with index
         const newItem: IBasketItem = {
             ...product,
-            index: this.state.items.length + 1 // 1-based indexing
+            index: this.state.items.length + 1
         };
 
         // Update state
@@ -64,15 +59,14 @@ export class BasketModel implements IBasketModel {
         this.state.items.splice(itemIndex, 1);
         this.state.total -= removedItem.price || 0;
 
-        // Re-index remaining items
+        // Re-inde items
         this.reindexItems();
 
-        // Notify everyone that basket changed
+        // Notify basket change
         this.emitStateChange();
     }
 
-    // Clear entire basket
-    clear(): void {
+    clear(): void { //used when the order is completed
         this.state = { items: [], total: 0 };
         this.emitStateChange();
     }
@@ -124,4 +118,5 @@ export class BasketModel implements IBasketModel {
             errors
         };
     }
+    
 }

@@ -16,7 +16,7 @@ export interface IBasketItem extends IProduct { //for indexing in thee cart
     index: number;
 }
 
-export type TPaymentType = 'card' | 'cash';
+export type TPaymentType = 'online' | 'cash';
 
 export interface IOrderData { //entire order data
     total: number;

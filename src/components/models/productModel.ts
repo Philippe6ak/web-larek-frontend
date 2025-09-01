@@ -1,7 +1,6 @@
-// models/ProductModel.ts
-import { Api } from './base/api';
-import { IProduct, IApiListResponse } from '../types/index';
-import { API_URL } from '../utils/constants';
+import { Api } from '../base/api';
+import { IProduct, IApiListResponse } from '../../types/index';
+import { API_URL } from '../../utils/constants';
 
 export class ProductModel {
     private products: IProduct[] = [];
