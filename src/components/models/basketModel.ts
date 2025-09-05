@@ -9,19 +9,16 @@ export class BasketModel implements IBasketModel {
 
     getState(): IBasketState {
         return { 
-            items: [...this.state.items], // Copy array to prevent external modification
+            items: [...this.state.items],
             total: this.state.total
         };
     }
 
-    // Add product to basket with validation
     addItem(product: IProduct): void {
         if (product.price === null) {
             console.log('Cannot add priceless product to basket');
             return;
         }
-
-        // Check if product already exists in basket
         const existingItemIndex = this.state.items.findIndex(item => item.id === product.id);
         
         if (existingItemIndex >= 0) {
@@ -29,17 +26,13 @@ export class BasketModel implements IBasketModel {
             return;
         }
 
-        // Create basket item with index
         const newItem: IBasketItem = {
             ...product,
             index: this.state.items.length + 1
         };
 
-        // Update state
         this.state.items.push(newItem);
         this.state.total += product.price;
-
-        // Notify everyone that basket changed
         this.emitStateChange();
     }
 
@@ -52,17 +45,11 @@ export class BasketModel implements IBasketModel {
             return;
         }
 
-        // Get item being removed
         const removedItem = this.state.items[itemIndex];
         
-        // Update state
         this.state.items.splice(itemIndex, 1);
         this.state.total -= removedItem.price || 0;
-
-        // Re-inde items
         this.reindexItems();
-
-        // Notify basket change
         this.emitStateChange();
     }
 
@@ -71,17 +58,14 @@ export class BasketModel implements IBasketModel {
         this.emitStateChange();
     }
 
-    // Check if product is in basket
     isInBasket(productId: string): boolean {
         return this.state.items.some(item => item.id === productId);
     }
 
-    // Get item count
     getItemCount(): number {
         return this.state.items.length;
     }
 
-    // Private helper methods
     private reindexItems(): void {
         this.state.items.forEach((item, index) => {
             item.index = index + 1; // 1-based indexing
@@ -89,34 +73,9 @@ export class BasketModel implements IBasketModel {
     }
 
     private emitStateChange(): void {
-        // Emit event with current state
         eventEmitter.emit('basket:changed', this.getState());
         
-        // Also emit specific events for analytics/debugging
         eventEmitter.emit('basket:itemCount', this.getItemCount());
         eventEmitter.emit('basket:totalUpdated', this.state.total);
     }
-
-    // Optional: Validation methods
-    validateBasket(): { isValid: boolean; errors: string[] } {
-        const errors: string[] = [];
-        
-        // Check for priceless items (shouldn't happen with our validation)
-        const pricelessItems = this.state.items.filter(item => item.price === null);
-        if (pricelessItems.length > 0) {
-            errors.push('Basket contains priceless items');
-        }
-
-        // Check total calculation (sanity check)
-        const calculatedTotal = this.state.items.reduce((sum, item) => sum + (item.price || 0), 0);
-        if (Math.abs(this.state.total - calculatedTotal) > 0.01) {
-            errors.push('Total calculation mismatch');
-        }
-
-        return {
-            isValid: errors.length === 0,
-            errors
-        };
-    }
-    
 }

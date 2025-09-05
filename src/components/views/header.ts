@@ -15,10 +15,11 @@ export class Header extends Component {
     }
 
     private setupEventListeners(): void {
-        // Listen for actual item count
-        eventEmitter.on('basket:itemCount', (count: number) => {
-            this.itemCount = count;
-            this.updateCartCount();
+        eventEmitter.on('basket:itemCount', (count?: number) => {
+            if (count !== undefined) {
+                this.itemCount = count;
+                this.updateCartCount();
+            }
         });
 
         this.cartButton.addEventListener('click', () => {
@@ -28,7 +29,6 @@ export class Header extends Component {
 
     private updateCartCount(): void {
         this.cartCountElement.textContent = this.itemCount.toString();
-        this.cartCountElement.style.display = this.itemCount > 0 ? 'block' : 'none';
     }
 
     render(): HTMLElement {

@@ -257,4 +257,6 @@ npm run build
 
 ## Presenter 
 
-main app (не сделано еще)
+main app
+
+Основное приложение, расположенное в [src/index.ts](src/index.ts), содержит логику приложения. Используя eventEmitter, оно позволяет Views и Models взаимодействовать друг с другом.

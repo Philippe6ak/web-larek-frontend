@@ -3,40 +3,33 @@ import { IOrderResponse } from '../../types/index';
 import { eventEmitter } from '../../utils/eventEmitter';
 
 export class OrderSuccess extends Component {
-    private orderIdElement: HTMLElement;
-    private totalElement: HTMLElement;
-    private closeButton: HTMLButtonElement;
+    private descriptionElement: HTMLElement | null;
+    private closeButton: HTMLElement | null;
 
     constructor(container: HTMLElement) {
         super(container);
-        this.orderIdElement = this.container.querySelector('.order-success__id')!;
-        this.totalElement = this.container.querySelector('.order-success__total')!;
-        this.closeButton = this.container.querySelector('.order-success__close')!;
-        
+        this.descriptionElement = this.container.querySelector('.order-success__description');
+        this.closeButton = this.container.querySelector('.order-success__close');
+
         this.setupEventListeners();
     }
 
     render(orderData: IOrderResponse): HTMLElement {
-        this.orderIdElement.textContent = orderData.id;
-        this.totalElement.textContent = `${orderData.total} синапсов`;
+        console.log('something should appear!');
+        if (this.descriptionElement) {
+            this.descriptionElement.textContent = 
+                `Списано ${orderData.total} синапсов`;
+        }
+        eventEmitter.emit('order:complete');
+
         return this.container;
     }
 
     private setupEventListeners(): void {
-        this.closeButton.addEventListener('click', () => {
-            this.close();
-        });
-
-        // Close on escape key
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                this.close();
-            }
-        });
-    }
-
-    private close(): void {
-        eventEmitter.emit('modal:closed');
-        eventEmitter.emit('order:complete');
+        if (this.closeButton) {
+            this.closeButton.addEventListener('click', () => {
+                eventEmitter.emit('orderSuccess:close');
+            });
+        }
     }
 }

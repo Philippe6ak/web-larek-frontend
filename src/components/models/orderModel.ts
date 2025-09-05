@@ -1,7 +1,8 @@
-import { IOrderData, IOrderResponse, IApiError } from '../../types/index';
+import { IOrderData, IOrderResponse, IApiError, IBasketState, TFormErrors } from '../../types/index';
 import { Api } from '../base/api';
 import { API_URL } from '../../utils/constants';
 import { BasketModel } from '../models/basketModel';
+import { eventEmitter } from '../../utils/eventEmitter';
 
 export class OrderModel {
     private api: Api;
@@ -17,50 +18,59 @@ export class OrderModel {
         const errors: string[] = [];
         
         if (!formData.email || !formData.email.includes('@')) {
-            errors.push('Invalid email address');
+            errors.push('Введите Email');
         }
         
-        if (!formData.phone || formData.phone.length < 5) {
-            errors.push('Phone number too short');
+        if (!formData.phone) {
+            errors.push('Нужно ввести ваш номер');
         }
         
         if (!formData.address || formData.address.trim().length === 0) {
-            errors.push('Address is required');
+            errors.push('Нужен адресс');
         }
         
         if (!formData.payment) {
-            errors.push('Payment method is required');
+            errors.push('Нужно указать способ оплаты');
         }
 
         return errors;
     }
 
     // Submit order to server
-    async submitOrder(formData: IOrderData): Promise<IOrderResponse> {
+    async submitOrder(formData: IOrderData): Promise<IOrderResponse | null> {
+        const errors = this.validateOrderData(formData);
+        if (Object.keys(errors).length > 0) {
+            eventEmitter.emit('order:validationError', errors);
+            return null;
+        }
+
         try {
-            // Get current basket state
             const basketState = this.basketModel.getState();
             
-            // Prepare order data for API
-            const orderData: IOrderData = {
-                ...formData,
+            const orderData = {
+                payment: formData.payment,
+                email: formData.email,
+                phone: formData.phone,
+                address: formData.address,
                 total: basketState.total,
                 items: basketState.items.map(item => item.id)
             };
 
-            // Send to server
-            const response = await this.api.post('/orders', orderData) as IOrderResponse;
+            const response = await this.api.post('/order/', orderData) as IOrderResponse;
+
+            this.basketModel.clear();
+            
+            eventEmitter.emit('order:success', response);
+            eventEmitter.emit('checkout:complete', response);
             
             return response;
             
         } catch (error) {
             const apiError = error as IApiError;
-            throw new Error(apiError.error || 'Order submission failed');
+            
+            // Emit error events
+            eventEmitter.emit('order:error', apiError);
+            eventEmitter.emit('checkout:error', 'Order submission failed');
         }
-    }
-
-    // Optional: Get order status
-    async getOrderStatus(orderId: string): Promise<any> {
-        return this.api.get(`/orders/${orderId}`);
     }
 }

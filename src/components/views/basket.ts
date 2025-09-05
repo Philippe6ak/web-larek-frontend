@@ -8,33 +8,26 @@ export class Basket extends Component {
     private basketList: HTMLElement;
     private basketTotal: HTMLElement;
     private checkoutButton: HTMLButtonElement;
-    private emptyMessage: HTMLElement;
+    private emptyMessage!: HTMLElement;
 
     constructor(container: HTMLElement) {
         super(container);
         
-        // Initialize card component for basket items
-        this.cardComponent = new Card('card-basket-template');
+        this.cardComponent = new Card('card-basket');
         
-        // Cache DOM elements that already exist in HTML
         this.basketList = this.container.querySelector('.basket__list')!;
         this.basketTotal = this.container.querySelector('.basket__price')!;
-        this.checkoutButton = this.container.querySelector('.button')!;
+        this.checkoutButton = this.container.querySelector('.basket__button')!;
         
-        // Create empty message element if it doesn't exist
         this.createEmptyMessage();
-        
-        // Set up event listeners
         this.setupEventListeners();
     }
 
-    // Render basket with current state
     render(state: IBasketState): HTMLElement {
         this.updateBasketContent(state);
         return this.container;
     }
 
-    // Create empty message element
     private createEmptyMessage(): void {
         this.emptyMessage = document.createElement('div');
         this.emptyMessage.className = 'basket__empty-message';
@@ -43,34 +36,27 @@ export class Basket extends Component {
         this.container.insertBefore(this.emptyMessage, this.basketList);
     }
 
-    // Set up event listeners
     private setupEventListeners(): void {
-        // Handle checkout button click
         this.checkoutButton.addEventListener('click', () => {
             eventEmitter.emit('checkout:start');
         });
 
-        // Listen for basket changes
-        eventEmitter.on('basket:changed', (state: IBasketState) => {
+        eventEmitter.on('basket:changed', (state?: IBasketState) => {
+        if (state) {
             this.render(state);
-        });
+        }
+    });
     }
 
-    // Update basket content based on state
     private updateBasketContent(state: IBasketState): void {
-        // Clear previous items
         this.basketList.innerHTML = '';
         
-        // Show/hide empty message
         this.emptyMessage.style.display = state.items.length === 0 ? 'block' : 'none';
         
-        // Update total
         this.basketTotal.textContent = `${state.total} синапсов`;
         
-        // Enable/disable checkout button
         this.checkoutButton.disabled = state.items.length === 0;
         
-        // Add items to basket
         if (state.items.length > 0) {
             state.items.forEach(item => {
                 const basketItemElement = this.cardComponent.renderBasket(item);
@@ -79,22 +65,19 @@ export class Basket extends Component {
         }
     }
 
-    // Show error state
     showError(message: string): void {
         const errorElement = document.createElement('div');
         errorElement.className = 'basket__error';
         errorElement.textContent = message;
         
-        // Remove existing error if any
         const existingError = this.container.querySelector('.basket__error');
         if (existingError) {
             existingError.remove();
         }
-        
+
         this.container.appendChild(errorElement);
     }
 
-    // Clear error state
     clearError(): void {
         const errorElement = this.container.querySelector('.basket__error');
         if (errorElement) {

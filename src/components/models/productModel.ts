@@ -9,7 +9,7 @@ export class ProductModel {
 
     async loadProducts(): Promise<IProduct[]> {
         try {
-            const response = await this.api.get('/products') as IApiListResponse<IProduct>;
+            const response = await this.api.get('/product/') as IApiListResponse<IProduct>;
             this.products = response.items;
             return this.products;
         } catch (error) {

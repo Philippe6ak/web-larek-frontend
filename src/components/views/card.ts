@@ -15,12 +15,11 @@ export class Card extends Component {
         }
     }
 
-    // 1. For main gallery products
+    // main gallery
     renderGallery(data: IProduct): HTMLElement {
         const card = this.createCardFromTemplate();
         this.populateCardBasic(card, data);
         
-        // Make entire card clickable for preview
         card.addEventListener('click', () => {
             eventEmitter.emit('product:preview', data.id);
         });
@@ -28,12 +27,11 @@ export class Card extends Component {
         return card;
     }
 
-    // 2. For modal preview (with add/remove functionality)
+    // for modal
     renderPreview(data: IProduct, isInBasket: boolean = false): HTMLElement {
         const card = this.createCardFromTemplate();
         this.populateCardDetailed(card, data);
-        
-        // Handle add/remove button
+
         const button = card.querySelector('.card__button') as HTMLButtonElement | null;
         if (button) {
             this.setupPreviewButton(button, data, isInBasket);
@@ -42,22 +40,19 @@ export class Card extends Component {
         return card;
     }
 
-    // 3. For basket items (with delete functionality)
+    // for cart
     renderBasket(item: IBasketItem): HTMLElement {
         const card = this.createCardFromTemplate();
         
-        // Basket-specific elements
         const indexElement = card.querySelector('.basket__item-index') as HTMLElement | null;
         const titleElement = card.querySelector('.card__title') as HTMLElement | null;
         const priceElement = card.querySelector('.card__price') as HTMLElement | null;
         const deleteButton = card.querySelector('.basket__item-delete') as HTMLButtonElement | null;
 
-        // Populate basket item
         if (indexElement) this.setText(indexElement, item.index.toString());
         if (titleElement) this.setText(titleElement, item.title);
         if (priceElement) this.setPrice(priceElement, item.price);
 
-        // Setup delete functionality
         if (deleteButton) {
             deleteButton.addEventListener('click', (event) => {
                 event.stopPropagation();
@@ -68,7 +63,6 @@ export class Card extends Component {
         return card;
     }
 
-    // Private helper methods
     private createCardFromTemplate(): HTMLElement {
         const fragment = this.template.content.cloneNode(true) as DocumentFragment;
         return fragment.firstElementChild as HTMLElement;
@@ -92,7 +86,6 @@ export class Card extends Component {
     private populateCardDetailed(card: HTMLElement, data: IProduct): void {
         this.populateCardBasic(card, data);
         
-        // Additional detail for modal preview
         const descriptionElement = card.querySelector('.card__text') as HTMLElement | null;
         if (descriptionElement) this.setText(descriptionElement, data.description);
     }
@@ -104,14 +97,14 @@ export class Card extends Component {
             button.textContent = 'Бесценный товар';
         } else if (isInBasket) {
             // Item in basket - show remove option
-            button.textContent = 'Убрать';
+            button.textContent = 'Удалить из корзины';
             button.addEventListener('click', (event) => {
                 event.stopPropagation();
                 eventEmitter.emit('basket:remove', data.id);
             });
         } else {
             // Item not in basket - show add option
-            button.textContent = 'В корзину';
+            button.textContent = 'Купить';
             button.addEventListener('click', (event) => {
                 event.stopPropagation();
                 eventEmitter.emit('basket:add', data.id);
@@ -139,7 +132,6 @@ export class Card extends Component {
         element.alt = alt;
     }
 
-    // Required by base component
     render(): HTMLElement {
         return this.container;
     }

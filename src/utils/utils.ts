@@ -46,7 +46,14 @@ export function ensureElement<T extends HTMLElement>(selectorElement: SelectorEl
 
 export function cloneTemplate<T extends HTMLElement>(query: string | HTMLTemplateElement): T {
     const template = ensureElement(query) as HTMLTemplateElement;
-    return template.content.firstElementChild.cloneNode(true) as T;
+    
+    // FIX: Add null check for firstElementChild
+    const firstElement = template.content.firstElementChild;
+    if (!firstElement) {
+        throw new Error(`Template ${typeof query === 'string' ? query : ''} is empty`);
+    }
+    
+    return firstElement.cloneNode(true) as T;
 }
 
 export function bem(block: string, element?: string, modifier?: string): { name: string, class: string } {
@@ -133,3 +140,4 @@ export function createElement<
     }
     return element;
 }
+

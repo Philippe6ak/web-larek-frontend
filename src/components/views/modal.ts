@@ -4,6 +4,7 @@ import { eventEmitter } from '../../utils/eventEmitter';
 export class Modal extends Component {
     private contentContainer: HTMLElement;
     private closeButton: HTMLButtonElement;
+    private scrollPosition: number = 0;
 
     constructor(container: HTMLElement) {
         super(container);
@@ -20,27 +21,29 @@ export class Modal extends Component {
     open(content: HTMLElement): void {
         this.contentContainer.innerHTML = '';
         this.contentContainer.appendChild(content);
-        this.setVisible(true);
+        this.scrollPosition = window.scrollY;
+
+        this.container.style.top = `${this.scrollPosition}px`;
+        this.container.classList.add('modal_active');
         document.body.style.overflow = 'hidden';
     }
 
     close(): void {
-        this.setVisible(false);
         document.body.style.overflow = '';
+        this.container.classList.remove('modal_active');
         eventEmitter.emit('modal:closed');
+        window.scrollTo(0, this.scrollPosition);
     }
 
     private setupEventListeners(): void {
         this.closeButton.addEventListener('click', () => this.close());
         
-        // Close modal when clicking outside
         this.container.addEventListener('click', (event) => {
             if (event.target === this.container) {
                 this.close();
             }
         });
 
-        // Close modal on Escape key
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 this.close();

@@ -115,5 +115,6 @@ export interface IAppEvents {
     'catalog:error': string;
     'order:success': IOrderResponse;
     'order:error': IApiError;
+    'orderSuccess:close': void;
     'error': string;
 }

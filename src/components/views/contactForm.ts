@@ -26,19 +26,16 @@ export class ContactForm extends Component {
         const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
         const errorElement = form.querySelector('.form__errors') as HTMLElement;
 
-        // Email input
         emailInput.addEventListener('input', () => {
             this.email = emailInput.value.trim();
             this.validateForm(errorElement);
         });
 
-        // Phone input
         phoneInput.addEventListener('input', () => {
             this.phone = phoneInput.value.trim();
             this.validateForm(errorElement);
         });
 
-        // Form submission
         form.addEventListener('submit', (event) => {
             event.preventDefault();
             if (this.isValid()) {
@@ -64,7 +61,6 @@ export class ContactForm extends Component {
             errors.push('Необходимо указать телефон');
         }
 
-        // Update error message
         errorElement.textContent = errors.join(', ');
         submitButton.disabled = errors.length > 0;
     }

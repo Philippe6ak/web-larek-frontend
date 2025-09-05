@@ -27,7 +27,6 @@ export class PaymentForm extends Component {
         const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
         const errorElement = form.querySelector('.form__errors') as HTMLElement;
 
-        // Payment type selection
         paymentButtons.forEach(button => {
             button.addEventListener('click', () => {
                 paymentButtons.forEach(btn => btn.classList.remove('button_active'));
@@ -38,13 +37,11 @@ export class PaymentForm extends Component {
             });
         });
 
-        // Address input
         addressInput.addEventListener('input', () => {
             this.address = addressInput.value.trim();
             this.validateForm(errorElement);
         });
 
-        // Form submission
         form.addEventListener('submit', (event) => {
             event.preventDefault();
             if (this.isValid()) {
@@ -70,7 +67,6 @@ export class PaymentForm extends Component {
             errors.push('Необходимо указать адрес доставки');
         }
 
-        // Update error message
         errorElement.textContent = errors.join(', ');
         submitButton.disabled = errors.length > 0;
     }
